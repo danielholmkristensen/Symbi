@@ -66,20 +66,47 @@ export default function App() {
       { y: 0, opacity: 1, duration: 1.2, stagger: 0.2, ease: "power3.out", delay: 0.2 }
     );
 
-    // Blur effect for sections as they scroll past
+    // Blur effect for regular sections - only blur when scrolled PAST (bottom of section passes center)
     const blurSections = document.querySelectorAll('.blur-on-scroll');
     blurSections.forEach((section) => {
+      // Set initial state to clear
+      gsap.set(section, { filter: 'blur(0px)', opacity: 1 });
+
+      // Blur when the section's center passes the top 30% of viewport
       gsap.to(section, {
-        filter: 'blur(8px)',
-        opacity: 0.6,
+        filter: 'blur(6px)',
+        opacity: 0.5,
         ease: 'none',
         scrollTrigger: {
           trigger: section,
-          start: 'top 20%',
-          end: 'top -30%',
-          scrub: 1,
+          start: 'center 30%',  // Start blurring when center of section reaches 30% from top
+          end: 'bottom top',     // Fully blurred when bottom leaves viewport
+          scrub: 0.5,
         },
       });
+    });
+
+    // Protocol panels blur effect - each panel blurs as the next one covers it
+    const protocolPanels = document.querySelectorAll('.protocol-panel');
+    protocolPanels.forEach((panel, index) => {
+      const content = panel.querySelector('.protocol-content');
+      if (content && index < protocolPanels.length - 1) {
+        // Set initial state
+        gsap.set(content, { filter: 'blur(0px)', opacity: 1 });
+
+        // Blur this panel when the NEXT panel starts covering it
+        gsap.to(content, {
+          filter: 'blur(8px)',
+          opacity: 0.4,
+          ease: 'power2.in',
+          scrollTrigger: {
+            trigger: protocolPanels[index + 1], // Trigger on the NEXT panel
+            start: 'top bottom',    // When next panel enters viewport
+            end: 'top 20%',         // When next panel reaches 20% from top
+            scrub: 0.3,
+          },
+        });
+      }
     });
 
     // Feature 2: Moms Counter
@@ -278,8 +305,8 @@ export default function App() {
       {/* E. PROTOCOL - "The 3-Day Onboarding" */}
       <section className="bg-symbi-white relative">
         {/* Panel 1 */}
-        <div className="sticky top-0 h-[100dvh] w-full flex items-center justify-center bg-white border-b border-gray-100">
-          <div className="max-w-[1180px] w-full px-6 grid md:grid-cols-2 gap-16 items-center">
+        <div className="protocol-panel sticky top-0 h-[100dvh] w-full flex items-center justify-center bg-white border-b border-gray-100">
+          <div className="protocol-content max-w-[1180px] w-full px-6 grid md:grid-cols-2 gap-16 items-center">
             <div>
               <div className="text-symbi-amber font-mono font-bold text-sm mb-4">{t('protocol.day01')}</div>
               <h2 className="text-4xl font-bold tracking-tight mb-4">{t('protocol.day01Title')}</h2>
@@ -297,8 +324,8 @@ export default function App() {
         </div>
 
         {/* Panel 2 */}
-        <div className="sticky top-0 h-[100dvh] w-full flex items-center justify-center bg-gray-50 border-b border-gray-200">
-          <div className="max-w-[1180px] w-full px-6 grid md:grid-cols-2 gap-16 items-center">
+        <div className="protocol-panel sticky top-0 h-[100dvh] w-full flex items-center justify-center bg-gray-50 border-b border-gray-200">
+          <div className="protocol-content max-w-[1180px] w-full px-6 grid md:grid-cols-2 gap-16 items-center">
             <div>
               <div className="text-symbi-amber font-mono font-bold text-sm mb-4">{t('protocol.day02')}</div>
               <h2 className="text-4xl font-bold tracking-tight mb-4">{t('protocol.day02Title')}</h2>
@@ -322,8 +349,8 @@ export default function App() {
         </div>
 
         {/* Panel 3 */}
-        <div className="sticky top-0 h-[100dvh] w-full flex items-center justify-center bg-[#f4f6f8]">
-          <div className="max-w-[1180px] w-full px-6 grid md:grid-cols-2 gap-16 items-center">
+        <div className="protocol-panel sticky top-0 h-[100dvh] w-full flex items-center justify-center bg-[#f4f6f8]">
+          <div className="protocol-content max-w-[1180px] w-full px-6 grid md:grid-cols-2 gap-16 items-center">
             <div>
               <div className="text-symbi-amber font-mono font-bold text-sm mb-4">{t('protocol.day03')}</div>
               <h2 className="text-4xl font-bold tracking-tight mb-4">{t('protocol.day03Title')}</h2>
