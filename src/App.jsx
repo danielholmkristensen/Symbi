@@ -66,46 +66,54 @@ export default function App() {
       { y: 0, opacity: 1, duration: 1.2, stagger: 0.2, ease: "power3.out", delay: 0.2 }
     );
 
-    // Blur effect for regular sections - only blur when scrolled PAST (bottom of section passes center)
+    // Blur effect for regular sections - gradual blur as you scroll past
     const blurSections = document.querySelectorAll('.blur-on-scroll');
     blurSections.forEach((section) => {
       // Set initial state to clear
       gsap.set(section, { filter: 'blur(0px)', opacity: 1 });
 
-      // Blur when the section's center passes the top 30% of viewport
+      // Gradual blur starting earlier, synced with scroll speed
       gsap.to(section, {
-        filter: 'blur(6px)',
-        opacity: 0.5,
-        ease: 'none',
+        filter: 'blur(8px)',
+        opacity: 0.4,
+        ease: 'power1.in',  // Gradual acceleration into blur
         scrollTrigger: {
           trigger: section,
-          start: 'center 30%',  // Start blurring when center of section reaches 30% from top
-          end: 'bottom top',     // Fully blurred when bottom leaves viewport
-          scrub: 0.5,
+          start: 'top 50%',      // Start earlier - when top reaches middle of viewport
+          end: 'top -20%',       // Complete blur shortly after leaving
+          scrub: true,           // Perfectly synced with scroll
         },
       });
     });
 
     // Protocol panels blur effect - each panel blurs as the next one covers it
     const protocolPanels = document.querySelectorAll('.protocol-panel');
+    const pricingSection = document.querySelector('#pricing');
+
     protocolPanels.forEach((panel, index) => {
       const content = panel.querySelector('.protocol-content');
-      if (content && index < protocolPanels.length - 1) {
+      if (content) {
         // Set initial state
         gsap.set(content, { filter: 'blur(0px)', opacity: 1 });
 
-        // Blur this panel when the NEXT panel starts covering it
-        gsap.to(content, {
-          filter: 'blur(8px)',
-          opacity: 0.4,
-          ease: 'power2.in',
-          scrollTrigger: {
-            trigger: protocolPanels[index + 1], // Trigger on the NEXT panel
-            start: 'top bottom',    // When next panel enters viewport
-            end: 'top 20%',         // When next panel reaches 20% from top
-            scrub: 0.3,
-          },
-        });
+        // Determine trigger - next panel, or pricing section for the last panel
+        const nextTrigger = index < protocolPanels.length - 1
+          ? protocolPanels[index + 1]
+          : pricingSection;
+
+        if (nextTrigger) {
+          gsap.to(content, {
+            filter: 'blur(8px)',
+            opacity: 0.3,
+            ease: 'power1.in',
+            scrollTrigger: {
+              trigger: nextTrigger,
+              start: 'top 80%',     // Start earlier - when next section enters bottom 80%
+              end: 'top 30%',       // Complete when it reaches 30% from top
+              scrub: true,          // Perfectly synced with scroll
+            },
+          });
+        }
       }
     });
 
@@ -188,9 +196,9 @@ export default function App() {
       <section className="relative h-[100dvh] flex items-center justify-center bg-symbi-navy overflow-hidden blur-on-scroll">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000"
-            alt="Nordic Office Minimalist"
-            className="w-full h-full object-cover opacity-40 grayscale mix-blend-overlay"
+            src="https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?auto=format&fit=crop&q=80&w=2000"
+            alt="Copenhagen Harbor"
+            className="w-full h-full object-cover opacity-30 mix-blend-overlay"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-symbi-navy via-symbi-navy/80 to-transparent"></div>
         </div>
