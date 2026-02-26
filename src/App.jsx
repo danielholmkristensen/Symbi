@@ -72,16 +72,16 @@ export default function App() {
       // Set initial state to clear
       gsap.set(section, { filter: 'blur(0px)', opacity: 1 });
 
-      // Gradual blur starting earlier, synced with scroll speed
+      // Blur when section is being scrolled OUT of view (bottom passing through viewport)
       gsap.to(section, {
         filter: 'blur(8px)',
         opacity: 0.4,
-        ease: 'power1.in',  // Gradual acceleration into blur
+        ease: 'power1.in',
         scrollTrigger: {
           trigger: section,
-          start: 'top 50%',      // Start earlier - when top reaches middle of viewport
-          end: 'top -20%',       // Complete blur shortly after leaving
-          scrub: true,           // Perfectly synced with scroll
+          start: 'bottom 70%',   // Start blur when bottom of section reaches 70% from top
+          end: 'bottom 20%',     // Complete blur when bottom reaches 20% from top
+          scrub: true,
         },
       });
     });
